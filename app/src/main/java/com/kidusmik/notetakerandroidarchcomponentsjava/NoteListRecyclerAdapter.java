@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
@@ -75,7 +76,7 @@ public class NoteListRecyclerAdapter extends RecyclerView.Adapter<NoteListRecycl
             return 0;
     }
 
-    public class NoteViewHolder extends RecyclerView.ViewHolder{
+    public class NoteViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private int mNoteId;
         private final TextView mTvCourseTitle;
@@ -84,19 +85,30 @@ public class NoteListRecyclerAdapter extends RecyclerView.Adapter<NoteListRecycl
 
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             mTvCourseTitle = itemView.findViewById(R.id.tv_note_list_course_title);
             mTvNoteTitle = itemView.findViewById(R.id.tv_note_list_note_title);
             mTvNoteContent = itemView.findViewById(R.id.tv_note_list_note_content);
 
-            NoteListFragmentDirections.ActionNoteListFragmentToEditNoteFragment action =
-                    NoteListFragmentDirections.actionNoteListFragmentToEditNoteFragment().setNoteId(mNoteId);
-
 //            NavHostFragment.findNavController(mEditNoteFrag).navigate(action);
-//            Navigation.findNavController(itemView).navigate(action);
-//            MainActivity.mNavHostFragment.getNavController().navigate(action);
-            mNavController.navigate(action);
 
-            itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_noteListFragment_to_editNoteFragment));
+//            Navigation.findNavController(itemView).navigate(action);
+
+//            NoteListFragmentDirections.ActionNoteListFragmentToEditNoteFragment action =
+//                    NoteListFragmentDirections.actionNoteListFragmentToEditNoteFragment().setNoteId(mNoteId);
+
+//            MainActivity.mNavHostFragment.getNavController().navigate(action);
+
+//            mNavController.navigate(action);
+
+//            itemView.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_noteListFragment_to_editNoteFragment));
+        }
+
+        @Override
+        public void onClick(View v) {
+            NavDirections action = NoteListFragmentDirections.actionNoteListFragmentToEditNoteFragment().setNoteId(mNoteId);
+
+            Navigation.findNavController(v).navigate(action);
         }
     }
 }

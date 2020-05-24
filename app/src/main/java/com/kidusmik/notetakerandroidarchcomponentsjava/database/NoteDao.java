@@ -28,11 +28,11 @@ public interface NoteDao {
 
 
     @Query("SELECT * FROM note_table WHERE id == :id")
-    Note getSelectedNote(int id);
+    Note getSelectedNote(Integer id);
 
     @Delete
     void deleteNote(Note note);
 
     @Update
-    void updateNote(Note... notes);
+    void updateNote(Note note);
 }

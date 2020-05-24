@@ -11,6 +11,7 @@ import com.kidusmik.notetakerandroidarchcomponentsjava.database.Note;
 import com.kidusmik.notetakerandroidarchcomponentsjava.database.NoteRepository;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class NoteViewModel extends AndroidViewModel {
 
@@ -38,7 +39,11 @@ public class NoteViewModel extends AndroidViewModel {
         mRepository.deleteNote(note);
     }
 
-    public Note getSelectedNote(int noteId){
+    public Note getSelectedNote(int noteId) throws ExecutionException, InterruptedException {
         return mRepository.getSelectedNote(noteId);
+    }
+
+    public void updateNote(Note note){
+        mRepository.update(note);
     }
 }

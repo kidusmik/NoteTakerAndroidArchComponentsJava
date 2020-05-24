@@ -10,7 +10,8 @@ import androidx.room.PrimaryKey;
 public class Note {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    @ColumnInfo(name = "id")
+    private Integer id;
 
     @NonNull @ColumnInfo(name = "course_title")
     private String mCourseTitle;
@@ -21,13 +22,13 @@ public class Note {
     @NonNull @ColumnInfo(name = "note_content")
     private String mNoteContent;
 
-    @Ignore
-    public Note(int id, @NonNull String courseTitle, @NonNull String noteTitle, @NonNull String noteContent) {
-        this.id = id;
-        mCourseTitle = courseTitle;
-        mNoteTitle = noteTitle;
-        mNoteContent = noteContent;
-    }
+//    @Ignore
+//    public Note(int id, @NonNull String courseTitle, @NonNull String noteTitle, @NonNull String noteContent) {
+//        this.id = id;
+//        mCourseTitle = courseTitle;
+//        mNoteTitle = noteTitle;
+//        mNoteContent = noteContent;
+//    }
 
     public Note(@NonNull String courseTitle, @NonNull String noteTitle, @NonNull String noteContent) {
         mCourseTitle = courseTitle;
@@ -35,7 +36,7 @@ public class Note {
         mNoteContent = noteContent;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
@@ -54,7 +55,19 @@ public class Note {
         return mNoteContent;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
+    }
+
+    public void setCourseTitle(@NonNull String courseTitle) {
+        mCourseTitle = courseTitle;
+    }
+
+    public void setNoteTitle(@NonNull String noteTitle) {
+        mNoteTitle = noteTitle;
+    }
+
+    public void setNoteContent(@NonNull String noteContent) {
+        mNoteContent = noteContent;
     }
 }

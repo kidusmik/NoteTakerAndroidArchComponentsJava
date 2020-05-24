@@ -4,15 +4,21 @@ import android.app.Application;
 import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.paging.PagedList;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class NoteRepository {
 
     private NoteDao mNoteDao;
-    private LiveData<List<Note>> mAllNotes;
-    private Note mSelectedNote;
+
+//    private static MutableLiveData<List<Note>> mAllNotes = new MutableLiveData<>();
+
+    private static LiveData<List<Note>> mAllNotes;
+    private static Note mSelectedNote;
 
     public NoteRepository(Application application){
         NoteRoomDatabase db = NoteRoomDatabase.getDatabase(application);
@@ -25,6 +31,10 @@ public class NoteRepository {
         return mAllNotes;
     }
 
+    public void update(Note note){
+        new updateAsyncTask(mNoteDao).execute(note);
+    }
+
     public void insert(Note note){
         new insertAsyncTask(mNoteDao).execute(note);
     }
@@ -33,20 +43,20 @@ public class NoteRepository {
         new deleteAllNotesAsyncTask(mNoteDao).execute();
     }
 
-    public Note getSelectedNote(int noteId){
-        new getSelectedNoteAsyncTask(mNoteDao).execute(noteId);
-        return mSelectedNote;
+    public Note getSelectedNote(int noteId) throws ExecutionException, InterruptedException {
+        return new getSelectedNoteAsyncTask(mNoteDao).execute(noteId).get();
+//        return mNoteDao.getSelectedNote(noteId);
     }
 
     public void deleteNote(Note note){
         new deleteNoteAsyncTask(mNoteDao).execute(note);
     }
 
-    private class insertAsyncTask extends AsyncTask<Note, Void, Void> {
+    private static class insertAsyncTask extends AsyncTask<Note, Void, Void> {
 
         private NoteDao mAsyncTaskDao;
 
-        public insertAsyncTask(NoteDao noteDao) {
+        insertAsyncTask(NoteDao noteDao) {
             mAsyncTaskDao = noteDao;
         }
 
@@ -57,11 +67,11 @@ public class NoteRepository {
         }
     }
 
-    private class deleteAllNotesAsyncTask extends AsyncTask<Void, Void, Void>{
+    private static class deleteAllNotesAsyncTask extends AsyncTask<Void, Void, Void>{
 
         private NoteDao mAsyncTaskDao;
 
-        public deleteAllNotesAsyncTask(NoteDao noteDao) {
+        deleteAllNotesAsyncTask(NoteDao noteDao) {
             mAsyncTaskDao = noteDao;
         }
 
@@ -72,10 +82,10 @@ public class NoteRepository {
         }
     }
 
-    private class deleteNoteAsyncTask extends AsyncTask<Note, Void, Void> {
+    private static class deleteNoteAsyncTask extends AsyncTask<Note, Void, Void> {
         private NoteDao mAsyncTaskDao;
 
-        public deleteNoteAsyncTask(NoteDao noteDao) {
+        deleteNoteAsyncTask(NoteDao noteDao) {
             mAsyncTaskDao = noteDao;
 
         }
@@ -87,10 +97,10 @@ public class NoteRepository {
         }
     }
 
-    private class getSelectedNoteAsyncTask extends AsyncTask<Integer, Void, Note> {
+    private static class getSelectedNoteAsyncTask extends AsyncTask<Integer, Void, Note> {
 
         private NoteDao mAsyncTaskDao;
-        public getSelectedNoteAsyncTask(NoteDao noteDao) {
+        getSelectedNoteAsyncTask(NoteDao noteDao) {
             mAsyncTaskDao = noteDao;
         }
 
@@ -101,11 +111,12 @@ public class NoteRepository {
 
         @Override
         protected void onPostExecute(Note note) {
+            super.onPostExecute(note);
             mSelectedNote = note;
         }
     }
 
-    private class getAllNotesAsyncTask extends AsyncTask<Void, Void, LiveData<List<Note>>> {
+    private static class getAllNotesAsyncTask extends AsyncTask<Void, Void, LiveData<List<Note>>> {
 
         private NoteDao mAsyncTaskDao;
         public getAllNotesAsyncTask(NoteDao noteDao) {
@@ -119,7 +130,22 @@ public class NoteRepository {
 
         @Override
         protected void onPostExecute(LiveData<List<Note>> listLiveData) {
+//            mAllNotes.postValue(listLiveData.getValue());
+//            mAllNotes = listLiveData;
             mAllNotes = listLiveData;
+        }
+    }
+
+    private class updateAsyncTask extends AsyncTask<Note, Void, Void> {
+        private NoteDao mAsyncTaskDao;
+        public updateAsyncTask(NoteDao noteDao) {
+            mAsyncTaskDao = noteDao;
+        }
+
+        @Override
+        protected Void doInBackground(Note... notes) {
+            mAsyncTaskDao.updateNote(notes[0]);
+            return null;
         }
     }
 }

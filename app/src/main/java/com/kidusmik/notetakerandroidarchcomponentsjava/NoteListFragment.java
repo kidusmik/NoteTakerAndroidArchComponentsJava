@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -41,26 +42,24 @@ public class NoteListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_note_list, container, false);
-    }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        View view = inflater.inflate(R.layout.fragment_note_list, container, false);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab);
-        fab.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_noteListFragment_to_editNoteFragment));
+//        getLifecycle().addObserver(new NoteListObserver(getContext(), this, view, this, this));
+
+        mNoteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
         Fragment noteListFragment = NoteListFragment.this;
+
+        Fragment fragment = getParentFragment();
 
         NavController navController = MainActivity.mNavHostFragment.getNavController();
 
         final RecyclerView recyclerView = view.findViewById(R.id.rv_note_list);
-        final NoteListRecyclerAdapter adapter = new NoteListRecyclerAdapter(getContext(), noteListFragment, navController);
+        final NoteListRecyclerAdapter adapter = new NoteListRecyclerAdapter(getContext(), fragment, NavHostFragment.findNavController(this));
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mNoteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
         mNoteViewModel.getAllNotes().observe(getViewLifecycleOwner(), new Observer<List<Note>>() {
             @Override
@@ -68,6 +67,9 @@ public class NoteListFragment extends Fragment {
                 adapter.setNotes(notes);
             }
         });
+
+        FloatingActionButton fab = view.findViewById(R.id.fab);
+        fab.setOnClickListener(Navigation.createNavigateOnClickListener(R.id.action_noteListFragment_to_editNoteFragment));
 
         ItemTouchHelper helper = new ItemTouchHelper(
                 new ItemTouchHelper.SimpleCallback(0,
@@ -94,5 +96,7 @@ public class NoteListFragment extends Fragment {
                 });
 
         helper.attachToRecyclerView(recyclerView);
+
+        return view;
     }
 }

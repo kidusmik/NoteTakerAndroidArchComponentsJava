@@ -15,7 +15,7 @@ import com.kidusmik.notetakerandroidarchcomponentsjava.NotesModel;
 import java.util.ArrayList;
 import java.util.List;
 
-@Database(entities = Note.class, version = 1, exportSchema = false)
+@Database(entities = Note.class, version = 4, exportSchema = false)
 public abstract class NoteRoomDatabase extends RoomDatabase {
 
     public abstract NoteDao mNoteDao();
